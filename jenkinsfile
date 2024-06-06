@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/VikashAdhikari/WebAppA.git'
+        GIT_REPO = 'https://github.com/VikashAdhikari/WebAppA.git'
         AWS_REGION = 'us-east-1'
         CODEDEPLOY_APPLICATION = 'EC2-On-premise-'
         CODEDEPLOY_DEPLOYMENT_GROUP = 'deployment'
