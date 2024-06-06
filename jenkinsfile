@@ -18,7 +18,7 @@ pipeline {
         stage('Deploy with CodeDeploy') {
             steps {
                 script {
-                    withAWS(region: "$us-east-1", credentials: 'aws-credentials-id', s3Bucket: 'my-bucket') {
+                    withAWS(region: "$us-east-1", credentials: 'aws-credentials-id') {
                         awsCodeDeploy(
                             applicationName: "$EC2-On-premise-",
                             deploymentGroupName: "$deployment",
