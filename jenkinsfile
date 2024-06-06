@@ -1,32 +1,23 @@
 pipeline {
     agent any
 
-    environment {
-        GIT_REPO = 'https://github.com/VikashAdhikari/WebAppA.git'
-        AWS_REGION = 'us-east-1'
-        CODEDEPLOY_APPLICATION = 'EC2-On-premise-'
-        CODEDEPLOY_DEPLOYMENT_GROUP = 'deployment'
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
-                git url: "${GIT_REPO}", branch: 'main'
+                script {
+                    // Clone the Git repository
+                    git url: 'https://github.com/VikashAdhikari/WebAppA.git', branch: 'main'
+                }
             }
         }
 
-        stage('Deploy with CodeDeploy') {
+        stage('Deploy with Nginx') {
             steps {
                 script {
-                    withAWS(region: "${AWS_REGION}", credentials: 'aws-credentials-id') {
-                        awsCodeDeploy(
-                            applicationName: "${CODEDEPLOY_APPLICATION}",
-                            deploymentGroupName: "${CODEDEPLOY_DEPLOYMENT_GROUP}",
-                            revisionType: 'GitHub',  // Use 'GitHub' if revision is from GitHub
-                            repositoryName: 'WebAppA',
-                            commitId: 'latest'
-                        )
-                    }
+                    // Copy index.html to Nginx web root directory
+                    sh 'cp index.html /usr/share/nginx/html/'
+                    // Restart Nginx to apply changes
+                    sh 'sudo systemctl restart nginx'
                 }
             }
         }
