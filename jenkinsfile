@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/VikashAdhikari/WebAppA.git'
+        AWS_REGION = 'us-east-1'
+        CODEDEPLOY_APPLICATION = 'EC2-On-premise-'
+        CODEDEPLOY_DEPLOYMENT_GROUP = 'deployment'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git url: "$https://github.com/VikashAdhikari/WebAppA.git", branch: 'main'
+            }
+        }
+
+        stage('Deploy with CodeDeploy') {
+            steps {
+                script {
+                    withAWS(region: "$us-east-1", credentials: 'aws-credentials-id', s3Bucket: 'my-bucket') {
+                        awsCodeDeploy(
+                            applicationName: "$EC2-On-premise-",
+                            deploymentGroupName: "$deployment",
+                            revisionType: 'github',
+                            repositoryName: 'WebAppA',
+                            commitId: 'latest'
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful'
+        }
+        failure {
+            echo 'Deployment failed'
+        }
+    }
+}
