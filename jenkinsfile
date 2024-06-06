@@ -11,18 +11,18 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git url: "$https://github.com/VikashAdhikari/WebAppA.git", branch: 'main'
+                git url: "${https://github.com/VikashAdhikari/WebAppA.git}", branch: 'main'
             }
         }
 
         stage('Deploy with CodeDeploy') {
             steps {
                 script {
-                    withAWS(region: "$us-east-1", credentials: 'aws-credentials-id') {
+                    withAWS(region: "${us-east-1}", credentials: 'aws-credentials-id') {
                         awsCodeDeploy(
-                            applicationName: "$EC2-On-premise-",
-                            deploymentGroupName: "$deployment",
-                            revisionType: 'github',
+                            applicationName: "${EC2-On-premise-}",
+                            deploymentGroupName: "${deployment}",
+                            revisionType: 'GitHub',  // Use 'GitHub' if revision is from GitHub
                             repositoryName: 'WebAppA',
                             commitId: 'latest'
                         )
