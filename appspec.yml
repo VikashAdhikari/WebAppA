@@ -1,10 +1,18 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /usr/share/nginx/html
+  - source: /index.html
+    destination: /usr/share/nginx/html/
 hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      runas: root
   AfterInstall:
+    - location: scripts/after_install.sh
+      runas: root
+  ApplicationStart:
     - location: scripts/start_server.sh
-      timeout: 300
+      runas: root
+  ValidateService:
+    - location: scripts/validate_service.sh
       runas: root
