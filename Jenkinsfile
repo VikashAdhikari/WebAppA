@@ -6,7 +6,6 @@ pipeline {
         AWS_REGION = 'us-east-1'
         CODEDEPLOY_APPLICATION = 'EC2-On-premise-'
         CODEDEPLOY_DEPLOYMENT_GROUP = 'deployment'
-        AWS_CREDENTIALS_ID = 'aws-credentials-id'  // Use your Jenkins AWS credentials ID
     }
 
     stages {
@@ -18,30 +17,22 @@ pipeline {
 
         stage('Prepare Deployment') {
             steps {
-                script {
-                    // Create a deployment directory and copy index.html
-                    sh '''
-                    mkdir -p deploy
-                    cp index.html deploy/
-                    cd deploy
-                    zip -r ../deploy.zip .
-                    '''
-                }
+                sh 'cp index.html /usr/share/nginx/html/'
+                sh 'sudo systemctl restart nginx'
             }
         }
 
         stage('Deploy with CodeDeploy') {
             steps {
                 script {
-                    withAWS(region: "${AWS_REGION}", credentials: "${AWS_CREDENTIALS_ID}") {
-                        def deploymentId = awsCodeDeploy(
+                    withAWS(region: "${AWS_REGION}", credentials: 'aws-credentials-id') {
+                        awsCodeDeploy(
                             applicationName: "${CODEDEPLOY_APPLICATION}",
                             deploymentGroupName: "${CODEDEPLOY_DEPLOYMENT_GROUP}",
-                            revisionType: 'github',
-                            repositoryName: 'VikashAdhikari/WebAppA',
+                            revisionType: 'GitHub',  // Use 'GitHub' if revision is from GitHub
+                            repositoryName: 'WebAppA',
                             commitId: 'latest'
                         )
-                        echo "Deployment started with ID: ${deploymentId}"
                     }
                 }
             }
